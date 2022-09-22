@@ -3,6 +3,7 @@ apiVersion: apps/v1 # version of Kubernetes API to use
 kind: Deployment # type of object to create
 metadata: # data to uniquely identify object
   name: testapp-deployment
+  namespace: testapp
 spec: # state of object
   replicas: 4 # number of pods to start
   selector: # this is how the deployment will find pods to manage
@@ -25,6 +26,7 @@ apiVersion: v1 # version of the Kube API
 kind: Service # type of object to create
 metadata: # to uniquely identify the service
   name: testapp-service
+  namespace: testapp
 spec: # specification of service
   type: NodePort # type of service
   selector: # how will it bind to a deployment
