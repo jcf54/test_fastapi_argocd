@@ -41,16 +41,20 @@ spec:
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: testapp-ingress
+  name: testapp-deployment
   namespace: testapp
+  annotations:
+    kubernetes.io/ingress.class: traefik
 spec:
   rules:
-  - host: k3stest.foxtrot-titan.co.uk
-    http:
-      paths:
-      - path: /
-        backend:
-          service:
-            name: argocd-server
-            port:
-              number: 8000
+    - host: k3stest.foxtrot-titan.co.uk
+      http:
+        paths:
+          -
+            path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: testapp-deployment
+                port:
+                  number: 8000
