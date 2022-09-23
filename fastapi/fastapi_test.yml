@@ -22,18 +22,53 @@ spec: # state of object
 
 ---
 
-apiVersion: v1 # version of the Kube API
-kind: Service # type of object to create
-metadata: # to uniquely identify the service
+# apiVersion: v1 # version of the Kube API
+# kind: Service # type of object to create
+# metadata: # to uniquely identify the service
+#   name: testapp-service
+#   namespace: testapp
+# spec: # specification of service
+#   type: NodePort # type of service
+#   selector: # how will it bind to a deployment
+#     app: testapp
+#   ports:
+#     - name: http # name to identify, can be anything
+#       protocol: TCP # protocol (TCP/UDP)
+#       nodePort: 30000 # port K3s will listen to INBOUND
+#       port: 8000 # local port, can be anything
+#       targetPort: 8000 # port the container is listening on
+
+kind: Service
+apiVersion: v1
+metadata:
   name: testapp-service
-  namespace: testapp
-spec: # specification of service
-  type: NodePort # type of service
-  selector: # how will it bind to a deployment
+spec:
+  selector:
     app: testapp
   ports:
-    - name: http # name to identify, can be anything
-      protocol: TCP # protocol (TCP/UDP)
-      nodePort: 30000 # port K3s will listen to INBOUND
-      port: 8000 # local port, can be anything
-      targetPort: 8000 # port the container is listening on
+    - protocol: TCP
+      port: 8000
+      targetPort: 8000
+      
+---
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: testapp-deployment
+  namespace: testapp
+  annotations:
+    kubernetes.io/ingress.class: traefik
+spec:
+  rules:
+    - host: k3stest.foxtrot-titan.co.uk
+      http:
+        paths:
+          -
+            path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: testapp-deployment
+                port:
+                  number: 80
