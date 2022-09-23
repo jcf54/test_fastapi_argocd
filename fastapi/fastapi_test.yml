@@ -50,5 +50,7 @@ spec:
       paths:
       - path: /
         backend:
-          serviceName: testapp-deployment
-          servicePort: 8000
+          service:
+            name: argocd-server
+            port:
+              number: 8000
