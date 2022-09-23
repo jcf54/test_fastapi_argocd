@@ -52,6 +52,6 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: testapp-deployment
+                name: testapp
                 port:
                   number: 8000
