@@ -8,50 +8,48 @@ spec: # state of object
   replicas: 4 # number of pods to start
   selector: # this is how the deployment will find pods to manage
     matchLabels:
-      app: testapp # if it matches the app name
+      app: testapp-deployment # if it matches the app name
   template: # template of the pod (ie, what is it)
     metadata: # metadata to uniquely identify the pod
       labels:
-        app: testapp
+        app: testapp-deployment
     spec: # specification of the pod
       containers:
-        - name: fastapitest # it will create a container named `fastapitest`
+        - name: testapp-deployment # it will create a container named `fastapitest`
           image: jcfoxtrot54/fastapitest:latest # using this image from a container registry (Docker hub in this instance)
           ports: # which ports is the container listening on?
           - containerPort: 8000
 ---
 
-kind: Service
 apiVersion: v1
+kind: Service
 metadata:
-  name: testapp-service
+  name: testapp-deployment
+  labels:
+    app: testapp-deployment
 spec:
-  selector:
-    app: testapp
+  type: ClusterIP
   ports:
-    - protocol: TCP
-      port: 8000
+    - port: 8000
+      protocol: TCP
       targetPort: 8000
-
+  selector:
+    app: testapp-deployment
+    
 ---
 
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  name: testapp-ingress
-  namespace: testapp
-  annotations:
-    kubernetes.io/ingress.class: traefik
-spec:
-  rules:
-    - host: k3stest.foxtrot-titan.co.uk
-      http:
-        paths:
-          -
-            path: /
-            pathType: Prefix
-            backend:
-              service:
-                name: testapp-service
-                port:
-                  number: 80
+ apiVersion: networking.k8s.io/v1beta1 # for versions before 1.14 use extensions/v1beta1
+ kind: Ingress
+ metadata:
+   name: testapp-ingress
+   annotations:
+     nginx.ingress.kubernetes.io/rewrite-target: /$1
+ spec:
+   rules:
+   - host: k3stest.foxtrot-titan.co.uk
+     http:
+       paths:
+       - path: /
+         backend:
+           serviceName: testapp-deployment
+           servicePort: 8000
