@@ -41,4 +41,4 @@ spec:
               service:
                 name: fastapitest
                 port:
-                  number: 80
+                  number: 8000
