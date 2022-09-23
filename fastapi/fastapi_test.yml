@@ -19,6 +19,19 @@ spec: # state of object
           image: jcfoxtrot54/fastapitest:latest # using this image from a container registry (Docker hub in this instance)
           ports: # which ports is the container listening on?
           - containerPort: 8000
+---
+
+kind: Service
+apiVersion: v1
+metadata:
+  name: testapp-service
+spec:
+  selector:
+    app: testapp
+  ports:
+    - protocol: TCP
+      port: 8000
+      targetPort: 8000
 
 ---
 
@@ -39,6 +52,6 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: fastapitest
+                name: testapp-service
                 port:
                   number: 8000
